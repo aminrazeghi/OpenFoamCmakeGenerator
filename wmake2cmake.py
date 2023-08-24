@@ -12,12 +12,16 @@ with open("Make/files", 'r') as f:
 scrfiles = []
 targetname = ""
 
-defines =  ["-Dlinux64", "-DWM_DP", "-fpermissive", "-DNoRepository"]
+wm_project_version = str(os.getenv("WM_PROJECT_VERSION"))
+foam_version = wm_project_version[1:]
+
+defines =  ["-Dlinux64", "-m64", "-pthread", "-DWM_DP", "-DPOPENFOAM=" + foam_version, "-DWM_LABEL_SIZE=32", "-fpermissive", "-DNoRepository", "-O3"]
 
 FOAM_SRC = str(os.getenv("FOAM_SRC"))
 FOAM_LIBBIN = str(os.getenv("FOAM_LIBBIN"))
 
 includes = [
+  "include_directories(" + os.getcwd() +")", 
   "include_directories(" + FOAM_SRC + "/OpenFOAM/include)", 
   "include_directories(" + FOAM_SRC + "/OpenFOAM/lnInclude)", 
   "include_directories(" + FOAM_SRC + "/foam/lnInclude)", 
@@ -25,7 +29,7 @@ includes = [
 ]
 
 libs=[
-   FOAM_LIBBIN + "/libfoam.so",
+   # FOAM_LIBBIN + "/libfoam.so",
    FOAM_LIBBIN + "/libOpenFOAM.so"
 ]
 
@@ -37,9 +41,7 @@ for l in options:
             arg = arg.strip("$(LIB_SRC)")
             arg = arg.strip("/")
             path_lib = os.path.join(FOAM_SRC , arg)
-            # print(path_lib)
             arg = "include_directories(" +  path_lib + ")"
-            print(arg)
             includes.append(arg)
     elif opt.startswith("-l"):
         arg = opt[2:]
